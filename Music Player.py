@@ -10,10 +10,8 @@ class MusicPlayer(qtw.QWidget):
         self.setGeometry(100,100,600,300)
         self.setWindowTitle('Music Player')
         self.setWindowIcon(QIcon('images/win_icon.jpg'))
-        self.played = False
         self.setLayout(qtw.QVBoxLayout())
         self.buttons()
-        self.player = QMediaPlayer()
         self.show()
 
     def buttons(self):
@@ -28,17 +26,17 @@ class MusicPlayer(qtw.QWidget):
         # self.prev_s.setGeometry(180, 160, 90, 90)
         self.prev_s.setIcon(QIcon('images/prev.png'))
         self.prev_s.setIconSize(core.QSize(80,80))
-        self.play = qtw.QPushButton(self)
+        self.play = qtw.QPushButton(self, clicked=self.play_music)
         # self.play.setGeometry(270, 160, 90, 90)
-        if self.played:
-            self.play.setIcon(QIcon('images/play.png'))
-        else:
-            # self.play.setIcon(self.style().standardIcon(qtw.QStyle.SP_MediaVolume))
-            self.play.setIcon(QIcon('images/pause.png'))
+        self.play.setIcon(QIcon('images/play.png'))
+        # self.play.setIcon(self.style().standardIcon(qtw.QStyle.SP_MediaVolume))
         self.play.setIconSize(core.QSize(80,80))
+        self.play.setEnabled(False)
 
         self.slider = qtw.QSlider(core.Qt.Horizontal)
         self.slider.setRange(0,0)
+        self.slider.sliderMoved.connect(self.set_position)
+        print(self.slider.sliderPosition)
         self.label = qtw.QLabel()
         self.label.setSizePolicy(qtw.QSizePolicy.Preferred, qtw.QSizePolicy.Maximum)
 
@@ -59,13 +57,36 @@ class MusicPlayer(qtw.QWidget):
         self.layout().addWidget(hBox1)
         self.layout().addWidget(hBox2)
 
+        
+        self.player = QMediaPlayer()
+        self.player.positionChanged.connect(self.position_changed)
+        self.player.durationChanged.connect(self.duration_changed)
+   
     def open_file(self):
         filename, _ = qtw.QFileDialog.getOpenFileName(self, 'Open File', 'D:', 'Audio files (*.mp3)')
         if filename != '':
             self.player.setMedia(QMediaContent(core.QUrl.fromLocalFile(filename)))
             self.player.setVolume(50)
             self.player.play()
-            self.played = True
+            self.play.setEnabled(True)
+
+    def play_music(self):
+        if self.player.state() == QMediaPlayer.PlayingState:
+            self.player.pause()
+            print(self.slider.sliderPosition)
+            self.play.setIcon(QIcon('images/pause.png'))
+        else:
+            self.player.play()
+            self.play.setIcon(QIcon('images/play.png'))
+
+    def position_changed(self, position):
+        self.slider.setValue(position)
+    
+    def duration_changed(self, duration):
+        self.slider.setRange(0, duration)
+    
+    def set_position(self, position):
+        self.player.setPosition(position)
 
 app = qtw.QApplication([])
 win = MusicPlayer()
