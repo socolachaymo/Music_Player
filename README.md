@@ -1,6 +1,6 @@
 # Music_Player
 ### About the App
-A Music Player created with Pyqt5 GUI. You can choose a song from a folder and play it, the song's name will be presented on the screen. You can also pause the song while it's running, move the song toward and backward, and modify the volume. I still need to figure out how to handle the buttons to move to the next song or previous song. If you have an idea, feel free to contribute to this app! 
+A Music Player created with Pyqt5 GUI. You can choose a song from a folder and play it, the song's name will be presented on the screen. You can also pause the song while it's running, move the song toward and backward, open the song before or after the current song playing in the directory, and modify the volume.
 ### Screenshot
 This is how the app looks like:
 
